@@ -10,3 +10,13 @@
   max-height: 100vh;
   margin-bottom: 1rem;
 }
+
+.inputForm {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.inputFormField {
+  margin: 0;
+}

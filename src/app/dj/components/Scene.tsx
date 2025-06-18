@@ -26,7 +26,7 @@ export default function Scene({ children }: { children?: React.ReactNode }) {
               <Html sprite transform occlude={false}>
                 <ChatView />
               </Html>
-              <DJ position={[0, -2, 0]} />
+              <DJ position={[0, -4, 0]} />
             </group>
           </ScreenSpace>
           <Grid /** Cell size, default: 0.5 */

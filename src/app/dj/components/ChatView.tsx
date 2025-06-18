@@ -97,7 +97,7 @@ export default function ChatView() {
       </div>
 
       {/* Input Form */}
-      <div className="inputContainer">
+      <div className={styles.inputContainer}>
         <form
           ref={formRef}
           action={(formData) => {
@@ -114,7 +114,7 @@ export default function ChatView() {
             });
             return formAction(formData);
           }}
-          className="flex gap-2"
+          className={styles.inputForm}
           onSubmit={() => {
             // Reset form after submission
             setTimeout(() => formRef.current?.reset(), 0);
@@ -124,7 +124,7 @@ export default function ChatView() {
             type="text"
             name="prompt"
             placeholder="Ask for music recommendations or music questions..."
-            className="inputField"
+            className={styles.inputFormField}
             disabled={pending}
             required
           />
