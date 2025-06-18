@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useRef } from 'react';
+import { useActionState, useRef, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import {
   sendChatMessage,
@@ -9,6 +9,7 @@ import {
   type ChatState,
   type ChatMessage,
 } from '../actions';
+import { appStore } from '@/app/store';
 
 const initialState: ChatState = {
   messages: [],
@@ -30,6 +31,25 @@ export default function ChatView() {
   const { pending } = useFormStatus();
 
   console.log(state);
+  const lastMessage = state.messages.at(-1);
+
+  useEffect(() => {
+    if (lastMessage?.role === 'assistant') {
+      switch (lastMessage.response?.action.actionType) {
+        case 'RECOMMEND_SONGS':
+          appStore.trigger.addNode({
+            node: {
+              view: 'explore',
+              prompt: lastMessage.response.action.prompt,
+              songs: lastMessage.response.action.songs.map((song) => ({
+                ...song,
+                tags: [],
+              })),
+            },
+          });
+      }
+    }
+  }, [lastMessage]);
 
   const SongCard = ({ song }: { song: Song }) => (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-3 hover:bg-gray-750 transition-colors">
@@ -77,7 +97,7 @@ export default function ChatView() {
       >
         <p className="whitespace-pre-wrap">{message.content as string}</p>
 
-        {message.role === 'assistant' &&
+        {/* {message.role === 'assistant' &&
           message.response &&
           message.response.action.actionType === 'RECOMMEND_SONGS' && (
             <div className="mt-4 space-y-3">
@@ -85,7 +105,7 @@ export default function ChatView() {
                 <SongCard key={index} song={song} />
               ))}
             </div>
-          )}
+          )} */}
 
         <div className="text-xs opacity-70 mt-1">
           {new Date(message.timestamp).toLocaleTimeString()}

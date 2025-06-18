@@ -40,10 +40,10 @@ const initialGraph: TimelineGraph = {
 };
 
 type AddNodeEvent = {
-  prevNodeId: string;
+  prevNodeId?: string;
   node:
     | { view: 'welcome' }
-    | { view: 'explore'; prompt: string }
+    | { view: 'explore'; prompt: string; songs: Song[] }
     | { view: 'song'; song: Song };
 };
 
@@ -57,6 +57,7 @@ export const appStore = createStore({
   on: {
     addNode: (context, event: AddNodeEvent) =>
       produce(context, (draft) => {
+        const prevNodeId = event.prevNodeId ?? context.currentNodeId;
         const newNode = {
           id: createUniqueId(),
           ...event.node,
@@ -64,7 +65,7 @@ export const appStore = createStore({
         draft.graph.nodes.push(newNode as TimelineNode);
         draft.graph.edges.push({
           id: createUniqueId(),
-          source: event.prevNodeId,
+          source: prevNodeId,
           target: newNode.id,
         });
         draft.currentNodeId = newNode.id;
