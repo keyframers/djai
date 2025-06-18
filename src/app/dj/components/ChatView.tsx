@@ -9,6 +9,8 @@ import MessageBubble from "@/components/MessageBubble";
 
 import styles from "./ChatView.module.css";
 
+import { useSelector } from "@xstate/store/react";
+
 const initialState: ChatState = {
   messages: [],
 };
@@ -28,10 +30,18 @@ export default function ChatView() {
   const formRef = useRef<HTMLFormElement>(null);
   const { pending } = useFormStatus();
 
+  const messages = useSelector(appStore, (state) => state.context.messages);
+
+  console.log({ messages });
+
   console.log(state);
-  const lastMessage = state.messages.at(-1);
+  const lastMessage = messages.at(-1);
 
   useEffect(() => {
+    // appStore.trigger.setMessages({
+    //   messages: state.messages,
+    // });
+
     if (lastMessage?.role === "assistant") {
       switch (lastMessage.response?.action.actionType) {
         case "RECOMMEND_SONGS":
@@ -49,6 +59,12 @@ export default function ChatView() {
     }
   }, [lastMessage]);
 
+  useEffect(() => {
+    appStore.trigger.setMessages({
+      messages: state.messages,
+    });
+  }, [state.messages]);
+
   return (
     <div className={styles.root}>
       <div className={styles.messages}>
@@ -63,7 +79,7 @@ export default function ChatView() {
             }}
           />
         ) : (
-          state.messages.map((message: ChatMessage, i) => (
+          messages.map((message: ChatMessage, i) => (
             <MessageBubble key={i} message={message} />
           ))
         )}
@@ -84,8 +100,21 @@ export default function ChatView() {
       <div className="inputContainer">
         <form
           ref={formRef}
-          action={formAction}
-          className="inputForm"
+          action={(formData) => {
+            // optimistic ui
+            appStore.trigger.setMessages({
+              messages: [
+                ...state.messages,
+                {
+                  role: "user",
+                  content: formData.get("prompt") as string,
+                  timestamp: Date.now(),
+                },
+              ],
+            });
+            return formAction(formData);
+          }}
+          className="flex gap-2"
           onSubmit={() => {
             // Reset form after submission
             setTimeout(() => formRef.current?.reset(), 0);
