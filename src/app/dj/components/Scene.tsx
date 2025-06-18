@@ -5,11 +5,12 @@ import { Grid, ScreenSpace, Html } from "@react-three/drei";
 
 import styles from "./Scene.module.css";
 import DJ from "./3d/DJ";
-import PixelPass from "./3d/PixelPass";
 import Lights from "./3d/Lights";
 import Controls from "./Controls";
 
 import ChatView from "./ChatView";
+import PixelPass from "./3d/PixelPass";
+import Timeline3d from "./3d/Timeline3d";
 
 export default function Scene({ children }: { children?: React.ReactNode }) {
   return (
@@ -43,13 +44,15 @@ export default function Scene({ children }: { children?: React.ReactNode }) {
 
           <PixelPass pixelSize={4} />
           <Lights />
+
+          <Timeline3d />
           <ScreenSpace
             depth={10} // Distance from camera
           >
             <group position={[-8, 0, 0]}>
-              <Html sprite transform occlude={false}>
+              {/* <Html sprite transform occlude={false}>
                 <ChatView />
-              </Html>
+              </Html> */}
               <DJ position={[0, -5, 0]} />
             </group>
           </ScreenSpace>

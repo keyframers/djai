@@ -10,6 +10,7 @@ import MessageBubble from "@/components/MessageBubble";
 import styles from "./ChatView.module.css";
 
 import { useSelector } from "@xstate/store/react";
+import classNames from "classnames";
 
 const initialState: ChatState = {
   messages: [],
@@ -25,7 +26,7 @@ function SubmitButton() {
   );
 }
 
-export default function ChatView() {
+export default function ChatView({ className }: { className?: string }) {
   const [state, formAction] = useActionState(sendChatMessage, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const { pending } = useFormStatus();
@@ -66,9 +67,9 @@ export default function ChatView() {
   }, [state.messages]);
 
   return (
-    <div className={styles.root}>
+    <div className={classNames(className, styles.root)}>
       <div className={styles.messages}>
-        {state.messages.length === 0 ? (
+        {messages.length === 0 ? (
           <MessageBubble
             message={{
               role: "assistant",

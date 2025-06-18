@@ -6,6 +6,9 @@
   outline-offset: 2px;
   backdrop-filter: blur(10px);
   border-radius: 20px 0 0 0;
+  max-height: 100vh;
+  max-width: 100%;
+  overflow: auto;
 
   .box {
     border-radius: 0 0 20px 0;

@@ -12,75 +12,35 @@ import Scene from "./components/Scene";
 import styles from "./DJ.module.css";
 import Button from "@/components/Button";
 import { Song } from "../types";
-import { Html } from "@react-three/drei";
+import { Bounds, Html } from "@react-three/drei";
+import ChatView from "./components/ChatView";
 
 const queryClient = new QueryClient();
 
 export default function DJPage() {
   const state = useSelector(appStore, (state) => state);
-  const currentNode = useSelector(
-    appStore,
-    (state) => {
-      return state.context.graph.nodes.find(
-        (node) => node.id === state.context.currentNodeId
-      );
-    },
-    shallowEqual
-  );
-
-  const handleWelcomeSubmit = (prompt: string) => {
-    appStore.trigger.addNode({
-      node: {
-        view: "explore",
-        prompt,
-        songs: [],
-      },
-      prevNodeId: state.context.currentNodeId,
-    });
-  };
-
-  const handleSongSelect = (song: Song) => {
-    appStore.trigger.addNode({
-      node: {
-        view: "song",
-        song,
-      },
-      prevNodeId: state.context.currentNodeId,
-    });
-  };
-
-  const handleExploreMore = () => {
-    appStore.trigger.addNode({
-      node: {
-        view: "explore",
-        prompt: "chillwave",
-        songs: [],
-      },
-      prevNodeId: state.context.currentNodeId,
-    });
-  };
+  // const currentNode = useSelector(
+  //   appStore,
+  //   (state) => {
+  //     return state.context.graph.nodes.find(
+  //       (node) => node.id === state.context.currentNodeId
+  //     );
+  //   },
+  //   shallowEqual
+  // );
 
   return (
     <QueryClientProvider client={queryClient}>
       <Scene>
-        <Html transform sprite={true} occlude={false} className={styles.node}>
-          <div className={styles.view}>
-            {currentNode?.view === "explore" && (
-              <ExploreView
-                prompt={currentNode.prompt}
-                songs={currentNode.songs}
-                onSelectSong={handleSongSelect}
-              />
-            )}
-            {currentNode?.view === "song" && (
-              <SongView
-                song={currentNode.song}
-                onExploreMore={handleExploreMore}
-              />
-            )}
-          </div>
-        </Html>
+        {/* <Bounds>
+          <Html transform sprite={true} occlude={false}></Html>
+        </Bounds> */}
       </Scene>
+
+      <div className={styles.layout}>
+        <ChatView className={styles.chatView} />
+        {/* <div className={styles.content}></div> */}
+      </div>
       <div className={styles.root}>
         <Button
           className={styles.modeToggle}
