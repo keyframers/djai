@@ -6,6 +6,24 @@
   max-height: 100vh;
   margin-bottom: 1rem;
   font-size: 20px;
+
+  scrollbar-width: thin;
+  scrollbar-color: orange transparent;
+}
+
+/* For Webkit browsers */
+.messages::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: orange;
+  border-radius: 4px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .inputForm {
