@@ -22,3 +22,14 @@ body {
   color: var(--foreground);
   font-family: var(--font-smooch-sans), Helvetica, sans-serif;
 }
+
+input[type="text"] {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  background: #fff3;
+  border: 1px solid orange;
+  border-radius: 8px;
+  color: inherit;
+  margin-bottom: 1rem;
+}
