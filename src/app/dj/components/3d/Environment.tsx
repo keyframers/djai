@@ -7,8 +7,10 @@ export default function Lights() {
   const camera = useThree((state) => state.camera);
 
   useFrame(() => {
-    groupRef.current?.position.copy(camera.position);
-
+    if (groupRef.current) {
+      groupRef.current?.position.copy(camera.position);
+      groupRef.current.position.y = -10;
+    }
     return null;
   });
 

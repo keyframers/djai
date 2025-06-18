@@ -27,7 +27,7 @@ export default function Controls() {
   return (
     <>
       <Rig />
-      <OrbitControls makeDefault />
+      <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} />
     </>
   );
 }
