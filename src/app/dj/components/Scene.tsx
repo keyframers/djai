@@ -1,20 +1,25 @@
 "use client";
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Grid, OrbitControls } from "@react-three/drei";
+import { Grid, OrbitControls, ScreenSpace } from "@react-three/drei";
+
+import styles from "./Scene.module.css";
+import DJ from "./3d/DJ";
+import PixelPass from "./3d/PixelPass";
+import Lights from "./3d/Lights";
 
 export default function Scene() {
   return (
     <>
-      <div className="wrapper">
+      <div className={styles.wrapper}>
         <Canvas camera={{ position: [5, 5, 5], fov: 90 }} className="canvas">
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[5, 5, 5]} intensity={1} />
-          <mesh>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color="orange" />
-          </mesh>
-
+          <PixelPass pixelSize={4} />
+          <Lights />
+          <ScreenSpace
+            depth={10} // Distance from camera
+          >
+            <DJ position={[-8, -1, 0]} />
+          </ScreenSpace>
           <Grid /** Cell size, default: 0.5 */
             position={[0, -5, 0]}
             cellSize={1}
@@ -39,15 +44,6 @@ export default function Scene() {
           />
           <OrbitControls />
         </Canvas>
-
-        <style jsx>{`
-          .wrapper {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-          }
-        `}</style>
       </div>
     </>
   );
