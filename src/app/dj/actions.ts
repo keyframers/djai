@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { openai } from '@ai-sdk/openai';
 import { CoreAssistantMessage, generateObject } from 'ai';
-import { CoreMessage, CoreUserMessage } from 'ai';
+import { CoreUserMessage } from 'ai';
 
 // Song recommendation schema matching the existing Song type
 const songRecommendationSchema = z.object({
