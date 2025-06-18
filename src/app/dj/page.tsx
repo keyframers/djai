@@ -63,13 +63,7 @@ export default function DJPage() {
   return (
     <QueryClientProvider client={queryClient}>
       <Scene>
-        <Html
-          transform
-          // sprite
-          sprite={true}
-          occlude={false}
-          className={styles.node}
-        >
+        <Html transform sprite={true} occlude={false} className={styles.node}>
           <div className={styles.view}>
             {currentNode?.view === "welcome" && (
               <WelcomeView onSubmit={handleWelcomeSubmit} />
