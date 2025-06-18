@@ -6,4 +6,8 @@
   outline-offset: 2px;
   backdrop-filter: blur(10px);
   border-radius: 20px 0 0 0;
+
+  .box {
+    border-radius: 0 0 20px 0;
+  }
 }

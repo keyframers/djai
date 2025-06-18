@@ -15,17 +15,11 @@
   margin-top: 2rem;
 }
 .songCard {
-  padding: 1.5rem;
-  border: 1px solid #333;
-  border-radius: 8px;
-  background: transparent;
-  color: inherit;
-  text-align: left;
   cursor: pointer;
   transition: all 0.2s;
 }
 .songCard:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
 }
 .songCard h3 {

@@ -1,4 +1,5 @@
 import { songService } from "@/app/songService";
+import Button from "@/components/Button";
 import { ContentBox } from "@/components/ContentBox";
 import { useQuery } from "@tanstack/react-query";
 
@@ -31,9 +32,7 @@ export function SongView({ songId, onExploreMore }: SongViewProps) {
         {song.genre && <p className="genre">{song.genre}</p>}
       </div>
 
-      <button onClick={onExploreMore} className="explore-more">
-        Explore Similar Songs
-      </button>
+      <Button onClick={onExploreMore}>Explore Similar Songs</Button>
 
       <style jsx>{`
         .song-view {

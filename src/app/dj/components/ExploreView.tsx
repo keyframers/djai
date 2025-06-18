@@ -9,6 +9,8 @@ interface ExploreViewProps {
   onSelectSong: (songId: string) => void;
 }
 
+console.log({ styles });
+
 export function ExploreView({ prompt, onSelectSong }: ExploreViewProps) {
   const { data: suggestedSongs, isLoading } = useQuery({
     queryKey: ["songs", "search", prompt],
@@ -25,7 +27,7 @@ export function ExploreView({ prompt, onSelectSong }: ExploreViewProps) {
           {suggestedSongs?.map((song) => (
             <ContentBox
               key={song.id}
-              className={styles.songsCard}
+              className={styles.songCard}
               onClick={() => onSelectSong(song.id)}
             >
               <h3>{song.title}</h3>
