@@ -17,6 +17,7 @@
     "@types/three": "^0.177.0",
     "@xstate/store": "^3.6.2",
     "ai": "^4.3.16",
+    "algoliasearch": "^5.28.0",
     "gsap": "^3.13.0",
     "immer": "^10.1.1",
     "next": "15.3.3",
