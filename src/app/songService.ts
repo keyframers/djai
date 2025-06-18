@@ -9,6 +9,7 @@ const songDatabase: Song[] = [
     year: 1959,
     genre: 'Jazz',
     tags: ['jazz', 'chill', 'acoustic'],
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // placeholder
   },
   {
     id: 'song_002',
@@ -18,6 +19,7 @@ const songDatabase: Song[] = [
     year: 1959,
     genre: 'Jazz',
     tags: ['jazz', 'chill', 'acoustic'],
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // placeholder
   },
   {
     id: 'song_003',
@@ -27,6 +29,7 @@ const songDatabase: Song[] = [
     year: 1964,
     genre: 'Bossa Nova',
     tags: ['bossa nova', 'chill', 'acoustic'],
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // placeholder
   },
   {
     id: 'song_004',
@@ -36,6 +39,7 @@ const songDatabase: Song[] = [
     year: 1959,
     genre: 'Jazz',
     tags: ['jazz', 'chill', 'acoustic'],
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // placeholder
   },
   {
     id: 'song_005',
@@ -45,6 +49,7 @@ const songDatabase: Song[] = [
     year: 1964,
     genre: 'Jazz',
     tags: ['jazz', 'chill', 'acoustic'],
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav', // placeholder
   },
 ];
 
