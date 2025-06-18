@@ -20,6 +20,11 @@ const possibleActionsSchema = z.discriminatedUnion('actionType', [
   z.object({
     actionType: z.literal('RECOMMEND_SONGS'),
     message: z.string().describe('The conversational response to the user'),
+    prompt: z
+      .string()
+      .describe(
+        'The brief prompt for the song recommendations, e.g. "chill house". summarize what the user asked for.'
+      ),
     songs: z
       .array(songRecommendationSchema)
       .min(3)
@@ -38,16 +43,16 @@ const chatResponseSchema = z.object({
   action: possibleActionsSchema,
 });
 
+// Export types for use in components
+export type Song = z.infer<typeof songRecommendationSchema>;
+export type ChatResponse = z.infer<typeof chatResponseSchema>;
+
 export type ChatMessage = (
   | CoreUserMessage
   | (CoreAssistantMessage & { response: ChatResponse | null })
 ) & {
   timestamp: number;
 };
-
-// Export types for use in components
-export type Song = z.infer<typeof songRecommendationSchema>;
-export type ChatResponse = z.infer<typeof chatResponseSchema>;
 
 export interface ChatState {
   messages: ChatMessage[];

@@ -40,6 +40,7 @@ export default function ChatView() {
           appStore.trigger.addNode({
             node: {
               view: 'explore',
+              prompt: lastMessage.response.action.prompt,
               songs: lastMessage.response.action.songs.map((song) => ({
                 ...song,
                 tags: [],

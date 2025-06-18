@@ -43,7 +43,7 @@ type AddNodeEvent = {
   prevNodeId?: string;
   node:
     | { view: 'welcome' }
-    | { view: 'explore'; songs: Song[] }
+    | { view: 'explore'; prompt: string; songs: Song[] }
     | { view: 'song'; song: Song };
 };
 

@@ -31,6 +31,7 @@ export default function DJPage() {
     appStore.trigger.addNode({
       node: {
         view: 'explore',
+        prompt,
         songs: [],
       },
       prevNodeId: state.context.currentNodeId,
@@ -51,6 +52,7 @@ export default function DJPage() {
     appStore.trigger.addNode({
       node: {
         view: 'explore',
+        prompt: 'chillwave',
         songs: [],
       },
       prevNodeId: state.context.currentNodeId,
@@ -87,6 +89,7 @@ export default function DJPage() {
             )}
             {currentNode?.view === 'explore' && (
               <ExploreView
+                prompt={currentNode.prompt}
                 songs={currentNode.songs}
                 onSelectSong={handleSongSelect}
               />

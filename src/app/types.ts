@@ -8,6 +8,7 @@ interface WelcomeNode extends BaseNode {
 
 interface ExploreNode extends BaseNode {
   view: 'explore';
+  prompt: string;
   songs: Song[];
 }
 

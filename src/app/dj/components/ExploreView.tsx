@@ -5,11 +5,12 @@ import styles from './ExploreView.module.css';
 import { Song } from '@/app/types';
 
 interface ExploreViewProps {
+  prompt: string;
   songs: Song[];
   onSelectSong: (song: Song) => void;
 }
 
-export function ExploreView({ songs, onSelectSong }: ExploreViewProps) {
+export function ExploreView({ prompt, songs, onSelectSong }: ExploreViewProps) {
   // const { data: suggestedSongs, isLoading } = useQuery({
   //   queryKey: ['songs', 'suggest', prompt],
   //   queryFn: async (): Promise<Song[]> => {
@@ -33,6 +34,7 @@ export function ExploreView({ songs, onSelectSong }: ExploreViewProps) {
 
   return (
     <ContentBox className={styles.exploreView}>
+      <h2>Exploring: {prompt}</h2>
       <div className={styles.songsGrid}>
         {suggestedSongs?.map((song: Song, index: number) => (
           <ContentBox
