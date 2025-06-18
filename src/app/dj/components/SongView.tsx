@@ -19,10 +19,7 @@ export function SongView({ song, onExploreMore }: SongViewProps) {
         <h2>{song.title}</h2>
         <p className="artist">{song.artist}</p>
         {song.album && <p className="album">{song.album}</p>}
-        {song.genre && <p className="genre">{song.genre}</p>}
       </div>
-
-      <Button onClick={onExploreMore}>Explore Similar Songs</Button>
     </ContentBox>
   );
 }

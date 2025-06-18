@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useActionState, useRef, useEffect } from "react";
-import { useFormStatus } from "react-dom";
-import { sendChatMessage, type ChatState, type ChatMessage } from "../actions";
-import { appStore } from "@/app/store";
-import Button from "@/components/Button";
-import MessageBubble from "@/components/MessageBubble";
+import { useActionState, useRef, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
+import { sendChatMessage, type ChatState, type ChatMessage } from '../actions';
+import { appStore } from '@/app/store';
+import Button from '@/components/Button';
+import MessageBubble from '@/components/MessageBubble';
 
-import styles from "./ChatView.module.css";
+import styles from './ChatView.module.css';
 
-import { useSelector } from "@xstate/store/react";
-import classNames from "classnames";
+import { useSelector } from '@xstate/store/react';
+import classNames from 'classnames';
 
 const initialState: ChatState = {
   messages: [],
@@ -21,7 +21,7 @@ function SubmitButton() {
 
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "..." : "Send"}
+      {pending ? '...' : 'Send'}
     </Button>
   );
 }
@@ -29,13 +29,21 @@ function SubmitButton() {
 export default function ChatView({ className }: { className?: string }) {
   const [state, formAction] = useActionState(sendChatMessage, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { pending } = useFormStatus();
 
   const messages = useSelector(appStore, (state) => state.context.messages);
+  const currentNode = useSelector(
+    appStore,
+    (state) =>
+      state.context.graph.nodes.find(
+        (node) => node.id === state.context.currentNodeId
+      ),
+    (a, b) => a?.id === b?.id
+  );
 
-  console.log({ messages });
+  const currentSong = currentNode?.view === 'song' ? currentNode.song : null;
 
-  console.log(state);
   const lastMessage = messages.at(-1);
 
   useEffect(() => {
@@ -43,12 +51,12 @@ export default function ChatView({ className }: { className?: string }) {
     //   messages: state.messages,
     // });
 
-    if (lastMessage?.role === "assistant") {
+    if (lastMessage?.role === 'assistant') {
       switch (lastMessage.response?.action.actionType) {
-        case "RECOMMEND_SONGS":
+        case 'RECOMMEND_SONGS':
           appStore.trigger.addNode({
             node: {
-              view: "explore",
+              view: 'explore',
               prompt: lastMessage.response.action.prompt,
               songs: lastMessage.response.action.songs.map((song) => ({
                 ...song,
@@ -72,9 +80,9 @@ export default function ChatView({ className }: { className?: string }) {
         {messages.length === 0 ? (
           <MessageBubble
             message={{
-              role: "assistant",
+              role: 'assistant',
               content:
-                "Welcome to DJ! Ask me for music recommendations or music questions.",
+                'Welcome to DJ! Ask me for music recommendations or music questions.',
               timestamp: Date.now(),
               response: null,
             }}
@@ -99,6 +107,22 @@ export default function ChatView({ className }: { className?: string }) {
 
       {/* Input Form */}
       <div className={styles.inputContainer}>
+        {currentSong && (
+          <div className={styles.quickAction}>
+            <Button
+              onClick={() => {
+                const input = inputRef.current;
+                if (input) {
+                  const prompt = `songs like ${currentSong.title} by ${currentSong.artist}`;
+                  input.value = prompt;
+                }
+              }}
+              disabled={pending}
+            >
+              Find songs like "{currentSong.title}"
+            </Button>
+          </div>
+        )}
         <form
           ref={formRef}
           action={(formData) => {
@@ -107,9 +131,15 @@ export default function ChatView({ className }: { className?: string }) {
               messages: [
                 ...state.messages,
                 {
-                  role: "user",
-                  content: formData.get("prompt") as string,
+                  role: 'user',
+                  content: formData.get('prompt') as string,
                   timestamp: Date.now(),
+                },
+                {
+                  role: 'assistant',
+                  content: 'Thinking...',
+                  timestamp: Date.now(),
+                  response: null,
                 },
               ],
             });
@@ -122,6 +152,7 @@ export default function ChatView({ className }: { className?: string }) {
           }}
         >
           <input
+            ref={inputRef}
             type="text"
             name="prompt"
             placeholder="Ask for music recommendations or music questions..."
