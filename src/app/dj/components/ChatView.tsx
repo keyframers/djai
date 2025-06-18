@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useActionState, useRef, useEffect } from "react";
-import { useFormStatus } from "react-dom";
+import { useActionState, useRef, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import {
   sendChatMessage,
   type Song,
   type ChatResponse,
   type ChatState,
   type ChatMessage,
-} from "../actions";
-import { appStore } from "@/app/store";
-import Button from "@/components/Button";
+} from '../actions';
+import { appStore } from '@/app/store';
+import Button from '@/components/Button';
+import { useSelector } from '@xstate/store/react';
 
 const initialState: ChatState = {
   messages: [],
@@ -21,18 +22,18 @@ function SubmitButton() {
 
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "..." : "Send"}
+      {pending ? '...' : 'Send'}
     </Button>
   );
 }
 
 const MessageBubble = ({ message }: { message: ChatMessage }) => (
-  <div className="flex mb-4" data-role={message.role === "user"}>
+  <div className="flex mb-4" data-role={message.role === 'user'}>
     <div
       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-        message.role === "user"
-          ? "bg-blue-500 text-white"
-          : "bg-gray-100 text-gray-900"
+        message.role === 'user'
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-100 text-gray-900'
       }`}
     >
       <p className="whitespace-pre-wrap">{message.content as string}</p>
@@ -59,16 +60,24 @@ export default function ChatView() {
   const formRef = useRef<HTMLFormElement>(null);
   const { pending } = useFormStatus();
 
+  const messages = useSelector(appStore, (state) => state.context.messages);
+
+  console.log({ messages });
+
   console.log(state);
-  const lastMessage = state.messages.at(-1);
+  const lastMessage = messages.at(-1);
 
   useEffect(() => {
-    if (lastMessage?.role === "assistant") {
+    // appStore.trigger.setMessages({
+    //   messages: state.messages,
+    // });
+
+    if (lastMessage?.role === 'assistant') {
       switch (lastMessage.response?.action.actionType) {
-        case "RECOMMEND_SONGS":
+        case 'RECOMMEND_SONGS':
           appStore.trigger.addNode({
             node: {
-              view: "explore",
+              view: 'explore',
               prompt: lastMessage.response.action.prompt,
               songs: lastMessage.response.action.songs.map((song) => ({
                 ...song,
@@ -80,14 +89,20 @@ export default function ChatView() {
     }
   }, [lastMessage]);
 
+  useEffect(() => {
+    appStore.trigger.setMessages({
+      messages: state.messages,
+    });
+  }, [state.messages]);
+
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto ">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {state.messages.length === 0 ? (
+        {messages.length === 0 ? (
           <div>placeholder...</div>
         ) : (
-          state.messages.map((message: ChatMessage, i) => (
+          messages.map((message: ChatMessage, i) => (
             <MessageBubble key={i} message={message} />
           ))
         )}
@@ -108,7 +123,20 @@ export default function ChatView() {
       <div className="border-t p-4">
         <form
           ref={formRef}
-          action={formAction}
+          action={(formData) => {
+            // optimistic ui
+            appStore.trigger.setMessages({
+              messages: [
+                ...state.messages,
+                {
+                  role: 'user',
+                  content: formData.get('prompt') as string,
+                  timestamp: Date.now(),
+                },
+              ],
+            });
+            return formAction(formData);
+          }}
           className="flex gap-2"
           onSubmit={() => {
             // Reset form after submission

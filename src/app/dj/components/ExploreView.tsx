@@ -1,5 +1,4 @@
 import { ContentBox } from '@/components/ContentBox';
-import { useQuery } from '@tanstack/react-query';
 
 import styles from './ExploreView.module.css';
 import { Song } from '@/app/types';
