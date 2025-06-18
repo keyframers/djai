@@ -1,25 +1,23 @@
+'use server';
+
 import { z } from 'zod';
 import { openai } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
-import { NextResponse } from 'next/server';
-
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
 
 // Song recommendation schema matching the existing Song type
 const songRecommendationSchema = z.object({
   title: z.string(),
   artist: z.string(),
-  genre: z.string().optional(),
-  album: z.string().optional(),
-  year: z.number().optional(),
+  genre: z.string(),
+  album: z.string().nullable(),
+  year: z.number().nullable(),
   explanation: z.string().describe('Why this song matches the request'),
 });
 
 // Discriminated union for response types
-const possibleActionsSchema = z.discriminatedUnion('action', [
+const possibleActionsSchema = z.discriminatedUnion('actionType', [
   z.object({
-    action: z.literal('RECOMMEND_SONGS'),
+    actionType: z.literal('RECOMMEND_SONGS'),
     message: z.string().describe('The conversational response to the user'),
     songs: z
       .array(songRecommendationSchema)
@@ -28,21 +26,26 @@ const possibleActionsSchema = z.discriminatedUnion('action', [
       .describe('3-5 song recommendations'),
   }),
   z.object({
-    action: z.literal('RESPOND_TO_QUERY'),
+    actionType: z.literal('RESPOND_TO_QUERY'),
     message: z.string().describe('The conversational response to the user'),
   }),
 ]);
 
-const responseSchema = z.object({
+const chatResponseSchema = z.object({
   action: possibleActionsSchema,
 });
 
-export async function POST(req: Request) {
-  const { prompt } = await req.json();
+// Export types for use in components
+export type Song = z.infer<typeof songRecommendationSchema>;
+export type ChatResponse = z.infer<typeof chatResponseSchema>;
 
-  const result = await generateObject({
-    model: openai('o3-mini'),
-    system: `
+export async function sendChatMessage(prompt: string): Promise<ChatResponse> {
+  'use server';
+
+  try {
+    const result = await generateObject({
+      model: openai('o3-mini'),
+      system: `
 You are a knowledgeable and enthusiastic DJ assistant. Your purpose is to help users discover music and learn about music-related topics. 🎵
 
 You can perform two types of actions:
@@ -77,9 +80,13 @@ Remember:
 - Be engaging and conversational
 - Use the exact schema format for responses
 `.trim(),
-    prompt,
-    schema: responseSchema,
-  });
+      prompt,
+      schema: chatResponseSchema,
+    });
 
-  return NextResponse.json(result.object);
+    return result.object;
+  } catch (error) {
+    console.error('Error in sendChatMessage:', error);
+    throw new Error('Failed to process chat message');
+  }
 }
