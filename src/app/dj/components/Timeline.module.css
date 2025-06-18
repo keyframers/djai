@@ -10,6 +10,18 @@
     opacity: 0.8;
   }
 }
+
+.svgNode {
+  transition: all 0.2s ease;
+}
+
+.svgNode:hover {
+  fill: rgba(255, 255, 255, 0.25) !important;
+  stroke: #888 !important;
+  transform: scale(1.1);
+  transform-origin: center;
+}
+
 .nodeContainer {
   margin-bottom: 0.5rem;
 }
