@@ -7,7 +7,7 @@ import {
   type Song,
   type ChatResponse,
   type ChatState,
-  type Message,
+  type ChatMessage,
 } from '../actions';
 
 const initialState: ChatState = {
@@ -18,11 +18,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-    >
+    <button type="submit" disabled={pending}>
       {pending ? '...' : 'Send'}
     </button>
   );
@@ -33,16 +29,13 @@ export default function ChatView() {
   const formRef = useRef<HTMLFormElement>(null);
   const { pending } = useFormStatus();
 
+  console.log(state);
+
   const SongCard = ({ song }: { song: Song }) => (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-3 hover:bg-gray-750 transition-colors">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
-          <span className="text-white text-xl">🎵</span>
-        </div>
-        <div className="flex-1">
-          <h4 className="font-semibold text-white">{song.title}</h4>
-          <p className="text-gray-300">{song.artist}</p>
-        </div>
+        <h4 className="font-semibold text-white">{song.title}</h4>
+        <p className="text-gray-300">{song.artist}</p>
       </div>
 
       {(song.album || song.year || song.genre) && (
@@ -69,35 +62,33 @@ export default function ChatView() {
     </div>
   );
 
-  const MessageBubble = ({ message }: { message: Message }) => (
+  const MessageBubble = ({ message }: { message: ChatMessage }) => (
     <div
       className={`flex ${
-        message.type === 'user' ? 'justify-end' : 'justify-start'
+        message.role === 'user' ? 'justify-end' : 'justify-start'
       } mb-4`}
     >
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          message.type === 'user'
+          message.role === 'user'
             ? 'bg-blue-500 text-white'
             : 'bg-gray-100 text-gray-900'
         }`}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        <p className="whitespace-pre-wrap">{message.content as string}</p>
 
-        {message.response?.action.actionType === 'RECOMMEND_SONGS' && (
-          <div className="mt-4 space-y-3">
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              <span>🎧</span>
-              Song Recommendations
-            </h3>
-            {message.response.action.songs.map((song, index) => (
-              <SongCard key={index} song={song} />
-            ))}
-          </div>
-        )}
+        {message.role === 'assistant' &&
+          message.response &&
+          message.response.action.actionType === 'RECOMMEND_SONGS' && (
+            <div className="mt-4 space-y-3">
+              {message.response.action.songs.map((song, index) => (
+                <SongCard key={index} song={song} />
+              ))}
+            </div>
+          )}
 
         <div className="text-xs opacity-70 mt-1">
-          {message.timestamp.toLocaleTimeString()}
+          {new Date(message.timestamp).toLocaleTimeString()}
         </div>
       </div>
     </div>
@@ -105,34 +96,13 @@ export default function ChatView() {
 
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto ">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 shadow-lg">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <span>🎧</span>
-          DJ Chat
-        </h1>
-        <p className="text-purple-100 text-sm">
-          Ask for music recommendations or music questions!
-        </p>
-      </div>
-
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {state.messages.length === 0 ? (
-          <div className="text-center text-gray-500 mt-8">
-            <div className="text-6xl mb-4">🎵</div>
-            <h2 className="text-xl font-semibold mb-2">Welcome to DJ Chat!</h2>
-            <p className="text-gray-400">
-              Ask me for music recommendations or any music-related questions
-            </p>
-            <div className="mt-4 text-sm text-gray-400">
-              Try: "Suggest some chill songs for coding" or "What genre is
-              trip-hop?"
-            </div>
-          </div>
+          <div>placeholder...</div>
         ) : (
-          state.messages.map((message: Message) => (
-            <MessageBubble key={message.id} message={message} />
+          state.messages.map((message: ChatMessage, i) => (
+            <MessageBubble key={i} message={message} />
           ))
         )}
 

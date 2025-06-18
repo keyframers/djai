@@ -2,7 +2,8 @@
 
 import { z } from 'zod';
 import { openai } from '@ai-sdk/openai';
-import { generateObject } from 'ai';
+import { CoreAssistantMessage, generateObject } from 'ai';
+import { CoreUserMessage } from 'ai';
 
 // Song recommendation schema matching the existing Song type
 const songRecommendationSchema = z.object({
@@ -27,7 +28,9 @@ const possibleActionsSchema = z.discriminatedUnion('actionType', [
   }),
   z.object({
     actionType: z.literal('RESPOND_TO_QUERY'),
-    message: z.string().describe('The conversational response to the user'),
+    message: z
+      .string()
+      .describe('The brief conversational response to the user'),
   }),
 ]);
 
@@ -35,20 +38,19 @@ const chatResponseSchema = z.object({
   action: possibleActionsSchema,
 });
 
+export type ChatMessage = (
+  | CoreUserMessage
+  | (CoreAssistantMessage & { response: ChatResponse | null })
+) & {
+  timestamp: number;
+};
+
 // Export types for use in components
 export type Song = z.infer<typeof songRecommendationSchema>;
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 
 export interface ChatState {
-  messages: Message[];
-}
-
-export interface Message {
-  id: string;
-  type: 'user' | 'assistant';
-  content: string;
-  response?: ChatResponse;
-  timestamp: Date;
+  messages: ChatMessage[];
 }
 
 export async function sendChatMessage(
@@ -63,12 +65,13 @@ export async function sendChatMessage(
     return prevState;
   }
 
-  const userMessage: Message = {
-    id: Date.now().toString(),
-    type: 'user',
+  const userMessage: ChatMessage = {
+    role: 'user',
     content: prompt.trim(),
-    timestamp: new Date(),
+    timestamp: Date.now(),
   };
+
+  const messages = [...prevState.messages, userMessage];
 
   try {
     const result = await generateObject({
@@ -108,30 +111,29 @@ Remember:
 - Be engaging and conversational
 - Use the exact schema format for responses
 `.trim(),
-      prompt,
+      messages,
       schema: chatResponseSchema,
     });
 
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: 'assistant',
+    const assistantMessage: ChatMessage = {
+      role: 'assistant',
       content: result.object.action.message,
       response: result.object,
-      timestamp: new Date(),
+      timestamp: Date.now(),
     };
 
     return {
-      messages: [...prevState.messages, userMessage, assistantMessage],
+      messages: [...messages, assistantMessage],
     };
   } catch (error) {
     console.error('Error in sendChatMessage:', error);
 
-    const errorMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: 'assistant',
+    const errorMessage: ChatMessage = {
+      role: 'assistant',
       content:
         'Sorry, I had trouble processing your request. Please try again.',
-      timestamp: new Date(),
+      timestamp: Date.now(),
+      response: null,
     };
 
     return {
