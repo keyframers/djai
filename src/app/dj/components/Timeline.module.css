@@ -1,0 +1,50 @@
+.timeline {
+  padding: 1rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.8);
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    opacity: 0.8;
+  }
+}
+.nodeContainer {
+  margin-bottom: 0.5rem;
+}
+.timelineNode {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: calc(100% - var(--indent, 0px));
+  padding: 0.75rem;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+.timelineNode:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+.timelineNode.active {
+  border-color: #666;
+  background: rgba(255, 255, 255, 0.15);
+}
+.nodeIcon {
+  font-size: 1.2rem;
+  min-width: 1.5rem;
+}
+.nodeText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.children {
+  margin-top: 0.5rem;
+}

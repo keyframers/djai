@@ -1,6 +1,10 @@
 import { TimelineNode, TimelineEdge } from "@/app/types";
+import classNames from "classnames";
+
+import styles from "./Timeline.module.css";
 
 interface TimelineProps {
+  className?: string;
   nodes: TimelineNode[];
   edges: TimelineEdge[];
   currentNodeId: string;
@@ -8,6 +12,7 @@ interface TimelineProps {
 }
 
 export function Timeline({
+  className,
   nodes,
   edges,
   currentNodeId,
@@ -27,24 +32,26 @@ export function Timeline({
     const isActive = node.id === currentNodeId;
 
     return (
-      <div key={node.id} className="node-container">
+      <div key={node.id} className={styles.nodeContainer}>
         <button
-          className={`timeline-node ${isActive ? "active" : ""}`}
+          className={classNames(styles.timelineNode, {
+            [styles.active]: isActive,
+          })}
           onClick={() => onNodeSelect(node.id)}
           style={{ marginLeft: `${depth * 24}px` }}
         >
-          <span className="node-icon">
+          <span className={styles.nodeIcon}>
             {node.view === "welcome" && "👋"}
             {node.view === "explore" && "🔍"}
             {node.view === "song" && "🎵"}
           </span>
-          <span className="node-text">
+          <span className={styles.nodeText}>
             {node.view === "welcome" && "Welcome"}
             {node.view === "explore" && (node.prompt || "Exploring")}
             {node.view === "song" && (node.songId || "Playing")}
           </span>
         </button>
-        <div className="children">
+        <div className={styles.children}>
           {children.map((child) => renderNode(child, depth + 1))}
         </div>
       </div>
@@ -57,63 +64,9 @@ export function Timeline({
   );
 
   return (
-    <div className="timeline">
+    <div className={classNames(styles.timeline, className)}>
       <h3>Timeline</h3>
       {rootNode && renderNode(rootNode)}
-
-      <style jsx>{`
-        .timeline {
-          padding: 1rem;
-          border: 1px solid #333;
-          border-radius: 8px;
-          background: rgba(0, 0, 0, 0.2);
-          overflow-y: auto;
-          max-height: calc(100vh - 8rem);
-        }
-        h3 {
-          margin: 0 0 1rem;
-          font-size: 1.2rem;
-          opacity: 0.8;
-        }
-        .node-container {
-          margin-bottom: 0.5rem;
-        }
-        .timeline-node {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          width: calc(100% - var(--indent, 0px));
-          padding: 0.75rem;
-          text-align: left;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid #333;
-          border-radius: 6px;
-          color: inherit;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-size: 0.9rem;
-        }
-        .timeline-node:hover {
-          background: rgba(255, 255, 255, 0.1);
-          transform: translateX(4px);
-        }
-        .timeline-node.active {
-          border-color: #666;
-          background: rgba(255, 255, 255, 0.15);
-        }
-        .node-icon {
-          font-size: 1.2rem;
-          min-width: 1.5rem;
-        }
-        .node-text {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .children {
-          margin-top: 0.5rem;
-        }
-      `}</style>
     </div>
   );
 }

@@ -7,6 +7,10 @@ import { Timeline } from "./components/Timeline";
 import { WelcomeView } from "./components/WelcomeView";
 import { ExploreView } from "./components/ExploreView";
 import { SongView } from "./components/SongView";
+import Scene from "./components/Scene";
+
+import styles from "./DJ.module.css";
+import Button from "@/components/Button";
 
 const queryClient = new QueryClient();
 
@@ -54,17 +58,19 @@ export default function DJPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="">
-        <button
-          className="mode-toggle"
+      <Scene />
+      <div className={styles.root}>
+        <Button
+          className={styles.modeToggle}
           onClick={() => appStore.trigger.toggleMode()}
         >
           {state.context.mode === "single" ? "Show Timeline" : "Hide Timeline"}
-        </button>
+        </Button>
 
-        <div className="content">
+        <div className={styles.content}>
           {state.context.mode === "timeline" && (
             <Timeline
+              className={styles.timeline}
               nodes={state.context.graph.nodes}
               edges={state.context.graph.edges}
               currentNodeId={state.context.currentNodeId}
@@ -74,7 +80,7 @@ export default function DJPage() {
             />
           )}
 
-          <div className="view">
+          <div className={styles.view}>
             {currentNode?.view === "welcome" && (
               <WelcomeView onSubmit={handleWelcomeSubmit} />
             )}
@@ -93,40 +99,7 @@ export default function DJPage() {
           </div>
         </div>
 
-        <style jsx>{`
-          .mode-toggle {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            background: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-            z-index: 100;
-            font-size: 1rem;
-            transition: background 0.2s;
-          }
-          .mode-toggle:hover {
-            background: #444;
-          }
-          .content {
-            display: grid;
-            grid-template-columns: ${state.context.mode === "timeline"
-              ? "300px 1fr"
-              : "1fr"};
-            gap: 2rem;
-            margin-top: 3rem;
-            height: calc(100vh - 7rem);
-          }
-          .view {
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-        `}</style>
+        <style jsx>{``}</style>
       </div>
     </QueryClientProvider>
   );

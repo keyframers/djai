@@ -1,0 +1,19 @@
+.welcomeBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  background: #fff3;
+  border: 1px solid orange;
+  border-radius: 8px;
+  color: inherit;
+  margin-bottom: 1rem;
+}

@@ -1,5 +1,6 @@
-import { songService } from '@/app/songService';
-import { useQuery } from '@tanstack/react-query';
+import { songService } from "@/app/songService";
+import { ContentBox } from "@/components/ContentBox";
+import { useQuery } from "@tanstack/react-query";
 
 interface SongViewProps {
   songId: string;
@@ -8,7 +9,7 @@ interface SongViewProps {
 
 export function SongView({ songId, onExploreMore }: SongViewProps) {
   const { data: song, isLoading } = useQuery({
-    queryKey: ['songs', songId],
+    queryKey: ["songs", songId],
     queryFn: () => songService.getSongById(songId),
   });
 
@@ -21,7 +22,7 @@ export function SongView({ songId, onExploreMore }: SongViewProps) {
   }
 
   return (
-    <div className="song-view">
+    <ContentBox className="song-view">
       <div className="now-playing">
         <div className="album-art" />
         <h2>{song.title}</h2>
@@ -92,6 +93,6 @@ export function SongView({ songId, onExploreMore }: SongViewProps) {
           background: rgba(255, 255, 255, 0.1);
         }
       `}</style>
-    </div>
+    </ContentBox>
   );
 }

@@ -1,0 +1,21 @@
+.button {
+  padding: 0.5rem 1rem;
+  background: orange;
+  border: solid 1px darkorange;
+  outline: solid 1px orange;
+  outline-offset: 2px;
+  appearance: none;
+
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s, outline-offset 0.2s;
+
+  &:hover {
+    background: darkorange;
+    outline-offset: 5px;
+  }
+}

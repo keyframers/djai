@@ -1,11 +1,15 @@
-import { useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import { ContentBox } from "@/components/ContentBox";
+import { useState } from "react";
+import Button from "@/components/Button";
+import styles from "./WelcomeView.module.css";
 
 interface WelcomeViewProps {
   onSubmit: (prompt: string) => void;
 }
 
 export function WelcomeView({ onSubmit }: WelcomeViewProps) {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,53 +19,21 @@ export function WelcomeView({ onSubmit }: WelcomeViewProps) {
   };
 
   return (
-    <div className="welcome-view">
-      <h1>Welcome to AI DJ</h1>
+    <ContentBox className={styles.welcomeBox}>
+      <h1>Welcome to DJai</h1>
       <p>Tell me what kind of music you'd like to hear</p>
       <form onSubmit={handleSubmit}>
         <input
+          className={styles.input}
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="e.g., play me some chill coffee shop songs"
-          className="prompt-input"
         />
-        <button type="submit">Let's Go</button>
+        <Button className={styles.button} type="submit">
+          Let's Go
+        </Button>
       </form>
-
-      <style jsx>{`
-        .welcome-view {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        .prompt-input {
-          width: 100%;
-          padding: 1rem;
-          font-size: 1rem;
-          border: 1px solid #333;
-          border-radius: 8px;
-          background: transparent;
-          color: inherit;
-          margin-bottom: 1rem;
-        }
-        button {
-          padding: 0.75rem 2rem;
-          font-size: 1rem;
-          border-radius: 8px;
-          border: none;
-          background: #333;
-          color: white;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-        button:hover {
-          background: #444;
-        }
-      `}</style>
-    </div>
+    </ContentBox>
   );
 }
