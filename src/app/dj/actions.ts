@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { openai } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
+import { CoreMessage } from 'ai';
 
 // Song recommendation schema matching the existing Song type
 const songRecommendationSchema = z.object({
@@ -40,15 +41,8 @@ export type Song = z.infer<typeof songRecommendationSchema>;
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 
 export interface ChatState {
-  messages: Message[];
-}
-
-export interface Message {
-  id: string;
-  type: 'user' | 'assistant';
-  content: string;
+  messages: CoreMessage[];
   response?: ChatResponse;
-  timestamp: Date;
 }
 
 export async function sendChatMessage(
@@ -63,12 +57,12 @@ export async function sendChatMessage(
     return prevState;
   }
 
-  const userMessage: Message = {
-    id: Date.now().toString(),
-    type: 'user',
+  const userMessage: CoreMessage = {
+    role: 'user',
     content: prompt.trim(),
-    timestamp: new Date(),
   };
+
+  const messages = [...prevState.messages, userMessage];
 
   try {
     const result = await generateObject({
@@ -108,30 +102,26 @@ Remember:
 - Be engaging and conversational
 - Use the exact schema format for responses
 `.trim(),
-      prompt,
+      messages,
       schema: chatResponseSchema,
     });
 
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: 'assistant',
+    const assistantMessage: CoreMessage = {
+      role: 'assistant',
       content: result.object.action.message,
-      response: result.object,
-      timestamp: new Date(),
     };
 
     return {
-      messages: [...prevState.messages, userMessage, assistantMessage],
+      messages: [...messages, assistantMessage],
+      response: result.object,
     };
   } catch (error) {
     console.error('Error in sendChatMessage:', error);
 
-    const errorMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: 'assistant',
+    const errorMessage: CoreMessage = {
+      role: 'assistant',
       content:
         'Sorry, I had trouble processing your request. Please try again.',
-      timestamp: new Date(),
     };
 
     return {

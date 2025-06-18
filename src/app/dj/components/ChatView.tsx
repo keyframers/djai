@@ -7,8 +7,8 @@ import {
   type Song,
   type ChatResponse,
   type ChatState,
-  type Message,
 } from '../actions';
+import { CoreMessage } from 'ai';
 
 const initialState: ChatState = {
   messages: [],
@@ -32,6 +32,8 @@ export default function ChatView() {
   const [state, formAction] = useActionState(sendChatMessage, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const { pending } = useFormStatus();
+
+  console.log(state);
 
   const SongCard = ({ song }: { song: Song }) => (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-3 hover:bg-gray-750 transition-colors">
@@ -69,36 +71,43 @@ export default function ChatView() {
     </div>
   );
 
-  const MessageBubble = ({ message }: { message: Message }) => (
+  const MessageBubble = ({
+    message,
+    response,
+  }: {
+    message: CoreMessage;
+    response: ChatResponse | undefined;
+  }) => (
     <div
       className={`flex ${
-        message.type === 'user' ? 'justify-end' : 'justify-start'
+        message.role === 'user' ? 'justify-end' : 'justify-start'
       } mb-4`}
     >
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          message.type === 'user'
+          message.role === 'user'
             ? 'bg-blue-500 text-white'
             : 'bg-gray-100 text-gray-900'
         }`}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        <p className="whitespace-pre-wrap">{message.content as string}</p>
 
-        {message.response?.action.actionType === 'RECOMMEND_SONGS' && (
-          <div className="mt-4 space-y-3">
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              <span>🎧</span>
-              Song Recommendations
-            </h3>
-            {message.response.action.songs.map((song, index) => (
-              <SongCard key={index} song={song} />
-            ))}
-          </div>
-        )}
+        {message.role === 'assistant' &&
+          response?.action.actionType === 'RECOMMEND_SONGS' && (
+            <div className="mt-4 space-y-3">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <span>🎧</span>
+                Song Recommendations
+              </h3>
+              {response.action.songs.map((song, index) => (
+                <SongCard key={index} song={song} />
+              ))}
+            </div>
+          )}
 
-        <div className="text-xs opacity-70 mt-1">
+        {/* <div className="text-xs opacity-70 mt-1">
           {message.timestamp.toLocaleTimeString()}
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -131,8 +140,12 @@ export default function ChatView() {
             </div>
           </div>
         ) : (
-          state.messages.map((message: Message) => (
-            <MessageBubble key={message.id} message={message} />
+          state.messages.map((message: CoreMessage, i) => (
+            <MessageBubble
+              key={i}
+              message={message}
+              response={state.response}
+            />
           ))
         )}
 
