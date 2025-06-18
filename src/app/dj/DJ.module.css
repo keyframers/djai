@@ -17,7 +17,7 @@
   z-index: 10;
 }
 .view {
-  min-height: 70vh;
+  min-width: 50vw;
   display: flex;
   align-items: center;
   justify-content: center;

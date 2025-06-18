@@ -1,18 +1,20 @@
 "use client";
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Grid, OrbitControls, ScreenSpace } from "@react-three/drei";
+import { Grid, ScreenSpace } from "@react-three/drei";
 
 import styles from "./Scene.module.css";
 import DJ from "./3d/DJ";
 import PixelPass from "./3d/PixelPass";
 import Lights from "./3d/Lights";
+import Controls from "./Controls";
 
-export default function Scene() {
+export default function Scene({ children }: { children?: React.ReactNode }) {
   return (
     <>
       <div className={styles.wrapper}>
         <Canvas camera={{ position: [5, 5, 5], fov: 90 }} className="canvas">
+          <Controls />
           <PixelPass pixelSize={4} />
           <Lights />
           <ScreenSpace
@@ -42,7 +44,7 @@ export default function Scene() {
             /** Fade from camera (1) or origin (0), or somewhere in between, default: camera */
             fadeFrom={1}
           />
-          <OrbitControls />
+          {children}
         </Canvas>
       </div>
     </>

@@ -1,17 +1,18 @@
-'use client';
-import { useSelector } from '@xstate/store/react';
-import { appStore } from '@/app/store';
-import { shallowEqual } from '@xstate/store';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Timeline } from './components/Timeline';
-import { WelcomeView } from './components/WelcomeView';
-import { ExploreView } from './components/ExploreView';
-import { SongView } from './components/SongView';
-import Scene from './components/Scene';
+"use client";
+import { useSelector } from "@xstate/store/react";
+import { appStore } from "@/app/store";
+import { shallowEqual } from "@xstate/store";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Timeline } from "./components/Timeline";
+import { WelcomeView } from "./components/WelcomeView";
+import { ExploreView } from "./components/ExploreView";
+import { SongView } from "./components/SongView";
+import Scene from "./components/Scene";
 
-import styles from './DJ.module.css';
-import Button from '@/components/Button';
-import { Song } from '../types';
+import styles from "./DJ.module.css";
+import Button from "@/components/Button";
+import { Song } from "../types";
+import { Html } from "@react-three/drei";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ export default function DJPage() {
   const handleWelcomeSubmit = (prompt: string) => {
     appStore.trigger.addNode({
       node: {
-        view: 'explore',
+        view: "explore",
         prompt,
       },
       prevNodeId: state.context.currentNodeId,
@@ -40,7 +41,7 @@ export default function DJPage() {
   const handleSongSelect = (song: Song) => {
     appStore.trigger.addNode({
       node: {
-        view: 'song',
+        view: "song",
         song,
       },
       prevNodeId: state.context.currentNodeId,
@@ -50,8 +51,8 @@ export default function DJPage() {
   const handleExploreMore = () => {
     appStore.trigger.addNode({
       node: {
-        view: 'explore',
-        prompt: 'chillwave',
+        view: "explore",
+        prompt: "chillwave",
       },
       prevNodeId: state.context.currentNodeId,
     });
@@ -59,17 +60,43 @@ export default function DJPage() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Scene />
+      <Scene>
+        <Html
+          transform
+          // sprite
+          sprite={true}
+          occlude={false}
+          className={styles.node}
+        >
+          <div className={styles.view}>
+            {currentNode?.view === "welcome" && (
+              <WelcomeView onSubmit={handleWelcomeSubmit} />
+            )}
+            {currentNode?.view === "explore" && (
+              <ExploreView
+                prompt={currentNode.prompt}
+                onSelectSong={handleSongSelect}
+              />
+            )}
+            {currentNode?.view === "song" && (
+              <SongView
+                song={currentNode.song}
+                onExploreMore={handleExploreMore}
+              />
+            )}
+          </div>
+        </Html>
+      </Scene>
       <div className={styles.root}>
         <Button
           className={styles.modeToggle}
           onClick={() => appStore.trigger.toggleMode()}
         >
-          {state.context.mode === 'single' ? 'Show Timeline' : 'Hide Timeline'}
+          {state.context.mode === "single" ? "Show Timeline" : "Hide Timeline"}
         </Button>
 
         <div className={styles.content}>
-          {state.context.mode === 'timeline' && (
+          {state.context.mode === "timeline" && (
             <Timeline
               className={styles.timeline}
               nodes={state.context.graph.nodes}
@@ -80,24 +107,6 @@ export default function DJPage() {
               }
             />
           )}
-
-          <div className={styles.view}>
-            {currentNode?.view === 'welcome' && (
-              <WelcomeView onSubmit={handleWelcomeSubmit} />
-            )}
-            {currentNode?.view === 'explore' && (
-              <ExploreView
-                prompt={currentNode.prompt}
-                onSelectSong={handleSongSelect}
-              />
-            )}
-            {currentNode?.view === 'song' && (
-              <SongView
-                song={currentNode.song}
-                onExploreMore={handleExploreMore}
-              />
-            )}
-          </div>
         </div>
       </div>
     </QueryClientProvider>
