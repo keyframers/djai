@@ -14,7 +14,7 @@ import { calculateForceLayout } from "../forceLayout";
 
 export default function Timeline3d() {
   return (
-    <Bounds fit clip margin={7}>
+    <Bounds fit clip margin={10}>
       <TimelineInner />
     </Bounds>
   );
@@ -109,35 +109,37 @@ function TimelineNodeObject({
         />
       </mesh>
 
-      <Html
-        position={[0, -5, 0]}
-        sprite
-        transform
-        onClick={() => appStore.trigger.setCurrentNodeId({ nodeId: node.id })}
-        style={{ opacity: isCurrent ? 1 : 0.8 }}
-      >
-        <div
-          onClick={
-            isCurrent
-              ? undefined
-              : (e) => {
-                  e.preventDefault();
-                  appStore.trigger.setCurrentNodeId({ nodeId: node.id });
-                }
-          }
+      {isCurrent && (
+        <Html
+          position={[0, -5, 0]}
+          sprite
+          transform
+          onClick={() => appStore.trigger.setCurrentNodeId({ nodeId: node.id })}
+          style={{ opacity: isCurrent ? 1 : 0.8 }}
         >
-          {node?.view === "explore" && (
-            <ExploreView
-              prompt={node.prompt}
-              songs={node.songs}
-              onSelectSong={handleSongSelect}
-            />
-          )}
-          {node?.view === "song" && (
-            <SongView song={node.song} onExploreMore={handleExploreMore} />
-          )}
-        </div>
-      </Html>
+          <div
+            onClick={
+              isCurrent
+                ? undefined
+                : (e) => {
+                    e.preventDefault();
+                    appStore.trigger.setCurrentNodeId({ nodeId: node.id });
+                  }
+            }
+          >
+            {node?.view === "explore" && (
+              <ExploreView
+                prompt={node.prompt}
+                songs={node.songs}
+                onSelectSong={handleSongSelect}
+              />
+            )}
+            {node?.view === "song" && (
+              <SongView song={node.song} onExploreMore={handleExploreMore} />
+            )}
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
