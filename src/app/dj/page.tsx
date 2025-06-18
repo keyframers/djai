@@ -40,8 +40,7 @@ export default function DJPage() {
       <div className={styles.layout}>
         <ChatView className={styles.chatView} />
         {/* <div className={styles.content}></div> */}
-      </div>
-      <div className={styles.root}>
+
         <Button
           className={styles.modeToggle}
           onClick={() => appStore.trigger.toggleMode()}
@@ -49,19 +48,17 @@ export default function DJPage() {
           {state.context.mode === "single" ? "Show Timeline" : "Hide Timeline"}
         </Button>
 
-        <div className={styles.content}>
-          {state.context.mode === "timeline" && (
-            <Timeline
-              className={styles.timeline}
-              nodes={state.context.graph.nodes}
-              edges={state.context.graph.edges}
-              currentNodeId={state.context.currentNodeId}
-              onNodeSelect={(nodeId) =>
-                appStore.trigger.setCurrentNodeId({ nodeId })
-              }
-            />
-          )}
-        </div>
+        {state.context.mode === "timeline" && (
+          <Timeline
+            className={styles.timeline}
+            nodes={state.context.graph.nodes}
+            edges={state.context.graph.edges}
+            currentNodeId={state.context.currentNodeId}
+            onNodeSelect={(nodeId) =>
+              appStore.trigger.setCurrentNodeId({ nodeId })
+            }
+          />
+        )}
       </div>
     </QueryClientProvider>
   );

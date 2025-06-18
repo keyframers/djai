@@ -13,6 +13,14 @@ import { Song } from "@/app/types";
 import { calculateForceLayout } from "../forceLayout";
 
 export default function Timeline3d() {
+  return (
+    <Bounds fit clip margin={7}>
+      <TimelineInner />
+    </Bounds>
+  );
+}
+
+function TimelineInner() {
   const state = useSelector(appStore, (state) => state);
 
   const nodePositions = useMemo(() => {
@@ -25,20 +33,18 @@ export default function Timeline3d() {
   }, [state.context.graph]);
 
   return (
-    <Bounds fit margin={7}>
-      <group>
-        {nodePositions.map((nodePosition) => {
-          const { x, y, node } = nodePosition;
-          return (
-            <TimelineNodeObject
-              node={node}
-              position={[x * 0.25, 0, y * 0.25]}
-              key={node.id}
-            />
-          );
-        })}
-      </group>
-    </Bounds>
+    <group>
+      {nodePositions.map((nodePosition) => {
+        const { x, y, node } = nodePosition;
+        return (
+          <TimelineNodeObject
+            node={node}
+            position={[x * 0.25, 0, y * 0.25]}
+            key={node.id}
+          />
+        );
+      })}
+    </group>
   );
 }
 
@@ -105,10 +111,10 @@ function TimelineNodeObject({
 
       <Html
         position={[0, -5, 0]}
-        sprite={isCurrent}
+        sprite
         transform
         onClick={() => appStore.trigger.setCurrentNodeId({ nodeId: node.id })}
-        style={{ opacity: isCurrent ? 1 : 0.5 }}
+        style={{ opacity: isCurrent ? 1 : 0.8 }}
       >
         <div
           onClick={
