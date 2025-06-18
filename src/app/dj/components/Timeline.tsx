@@ -2,7 +2,6 @@ import { TimelineNode, TimelineEdge } from "@/app/types";
 import classNames from "classnames";
 
 import styles from "./Timeline.module.css";
-import ChatView from "./ChatView";
 
 interface TimelineProps {
   className?: string;
