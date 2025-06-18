@@ -8,6 +8,7 @@ import DJ from "./3d/DJ";
 import Lights from "./3d/Lights";
 import Grid from "./3d/Grid";
 import Controls from "./3d/Controls";
+import Environment from "./3d/Environment";
 
 import PixelPass from "./3d/PixelPass";
 import Timeline3d from "./3d/Timeline3d";
@@ -18,6 +19,8 @@ export default function Scene({ children }: { children?: React.ReactNode }) {
       <div className={styles.wrapper}>
         <Canvas camera={{ position: [0, 0, 5], fov: 90 }} className="canvas">
           <Controls />
+
+          <Environment />
 
           <fog attach="fog" args={["#171717", 30, 100]} />
 

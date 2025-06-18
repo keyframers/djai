@@ -55,7 +55,6 @@ function TimelineNodeObject({
   position: [number, number, number];
   node: TimelineNode;
 }) {
-  console.log("TimelineNodeObject", { node, position });
   const groupRef = useRef<Group>(null);
   const state = useSelector(appStore, (state) => state);
   const { currentNodeId } = state.context;
