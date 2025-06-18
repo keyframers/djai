@@ -20,3 +20,8 @@
     transform-origin: center right;
   }
 }
+
+.timestamp {
+  font-size: 0.8em;
+  color: orange;
+}

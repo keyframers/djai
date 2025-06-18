@@ -19,7 +19,7 @@ export default function Scene({ children }: { children?: React.ReactNode }) {
         <Canvas camera={{ position: [0, 0, 5], fov: 90 }} className="canvas">
           <Controls />
 
-          <fog attach="fog" color="#171717" near={20} far={50} />
+          <fog attach="fog" args={["#171717", 30, 100]} />
 
           <Grid position={[0, -10, 0]} />
 

@@ -19,20 +19,20 @@ export default function Timeline3d() {
     return calculateForceLayout(state.context.graph, {
       width: 300,
       height: 300,
-      linkDistance: 10,
-      chargeStrength: -100,
+      linkDistance: 1,
+      chargeStrength: -400,
     });
   }, [state.context.graph]);
 
   return (
-    <Bounds fit margin={10}>
+    <Bounds fit margin={7}>
       <group>
         {nodePositions.map((nodePosition) => {
           const { x, y, node } = nodePosition;
           return (
             <TimelineNodeObject
               node={node}
-              position={[x, 0, y]}
+              position={[x * 0.25, 0, y * 0.25]}
               key={node.id}
             />
           );
@@ -110,7 +110,16 @@ function TimelineNodeObject({
         onClick={() => appStore.trigger.setCurrentNodeId({ nodeId: node.id })}
         style={{ opacity: isCurrent ? 1 : 0.5 }}
       >
-        <div style={{ pointerEvents: isCurrent ? "auto" : "none" }}>
+        <div
+          onClick={
+            isCurrent
+              ? undefined
+              : (e) => {
+                  e.preventDefault();
+                  appStore.trigger.setCurrentNodeId({ nodeId: node.id });
+                }
+          }
+        >
           {node?.view === "explore" && (
             <ExploreView
               prompt={node.prompt}

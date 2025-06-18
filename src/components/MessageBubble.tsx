@@ -9,7 +9,7 @@ export default function MessageBubble({ message }: { message: ChatMessage }) {
     <div className={styles.message} data-user={message.role === "user"}>
       <p className="whitespace-pre-wrap">{message.content as string}</p>
 
-      <div className="messageBubbleTimestamp">
+      <div className={styles.timestamp}>
         {new Date(message.timestamp).toLocaleTimeString()}
       </div>
     </div>
