@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   const { prompt } = await req.json();
 
   const result = await generateObject({
-    model: openai('o3-mini'),
+    model: openai('o4-mini'),
     system: `
 You are a knowledgeable and enthusiastic DJ assistant. Your purpose is to help users discover music and learn about music-related topics. 🎵
 
