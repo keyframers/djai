@@ -65,9 +65,6 @@ export default function DJPage() {
       <Scene>
         <Html transform sprite={true} occlude={false} className={styles.node}>
           <div className={styles.view}>
-            {currentNode?.view === "welcome" && (
-              <WelcomeView onSubmit={handleWelcomeSubmit} />
-            )}
             {currentNode?.view === "explore" && (
               <ExploreView
                 prompt={currentNode.prompt}

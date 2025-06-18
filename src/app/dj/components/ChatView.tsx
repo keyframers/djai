@@ -2,15 +2,12 @@
 
 import { useActionState, useRef, useEffect } from "react";
 import { useFormStatus } from "react-dom";
-import {
-  sendChatMessage,
-  type Song,
-  type ChatResponse,
-  type ChatState,
-  type ChatMessage,
-} from "../actions";
+import { sendChatMessage, type ChatState, type ChatMessage } from "../actions";
 import { appStore } from "@/app/store";
 import Button from "@/components/Button";
+import MessageBubble from "@/components/MessageBubble";
+
+import styles from "./ChatView.module.css";
 
 const initialState: ChatState = {
   messages: [],
@@ -25,34 +22,6 @@ function SubmitButton() {
     </Button>
   );
 }
-
-const MessageBubble = ({ message }: { message: ChatMessage }) => (
-  <div className="flex mb-4" data-role={message.role === "user"}>
-    <div
-      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-        message.role === "user"
-          ? "bg-blue-500 text-white"
-          : "bg-gray-100 text-gray-900"
-      }`}
-    >
-      <p className="whitespace-pre-wrap">{message.content as string}</p>
-
-      {/* {message.role === 'assistant' &&
-          message.response &&
-          message.response.action.actionType === 'RECOMMEND_SONGS' && (
-            <div className="mt-4 space-y-3">
-              {message.response.action.songs.map((song, index) => (
-                <SongCard key={index} song={song} />
-              ))}
-            </div>
-          )} */}
-
-      <div className="text-xs opacity-70 mt-1">
-        {new Date(message.timestamp).toLocaleTimeString()}
-      </div>
-    </div>
-  </div>
-);
 
 export default function ChatView() {
   const [state, formAction] = useActionState(sendChatMessage, initialState);
@@ -81,11 +50,18 @@ export default function ChatView() {
   }, [lastMessage]);
 
   return (
-    <div className="flex flex-col h-full max-w-4xl mx-auto ">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className={styles.root}>
+      <div className={styles.messages}>
         {state.messages.length === 0 ? (
-          <div>placeholder...</div>
+          <MessageBubble
+            message={{
+              role: "assistant",
+              content:
+                "Welcome to DJ! Ask me for music recommendations or music questions.",
+              timestamp: Date.now(),
+              response: null,
+            }}
+          />
         ) : (
           state.messages.map((message: ChatMessage, i) => (
             <MessageBubble key={i} message={message} />
@@ -93,11 +69,11 @@ export default function ChatView() {
         )}
 
         {pending && (
-          <div className="flex justify-start mb-4">
-            <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
-              <div className="flex items-center gap-2">
-                <div className="animate-spin w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
-                <span>DJ is thinking...</span>
+          <div className="pendingMessage">
+            <div className="pendingBubble">
+              <div className="pendingSpinnerContainer">
+                <div className="pendingSpinner"></div>
+                <span className="pendingText">DJ is thinking...</span>
               </div>
             </div>
           </div>
@@ -105,11 +81,11 @@ export default function ChatView() {
       </div>
 
       {/* Input Form */}
-      <div className="border-t p-4">
+      <div className="inputContainer">
         <form
           ref={formRef}
           action={formAction}
-          className="flex gap-2"
+          className="inputForm"
           onSubmit={() => {
             // Reset form after submission
             setTimeout(() => formRef.current?.reset(), 0);
@@ -119,7 +95,7 @@ export default function ChatView() {
             type="text"
             name="prompt"
             placeholder="Ask for music recommendations or music questions..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="inputField"
             disabled={pending}
             required
           />

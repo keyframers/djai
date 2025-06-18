@@ -1,8 +1,8 @@
-import { TimelineNode, TimelineEdge } from '@/app/types';
-import classNames from 'classnames';
+import { TimelineNode, TimelineEdge } from "@/app/types";
+import classNames from "classnames";
 
-import styles from './Timeline.module.css';
-import ChatView from './ChatView';
+import styles from "./Timeline.module.css";
+import ChatView from "./ChatView";
 
 interface TimelineProps {
   className?: string;
@@ -42,14 +42,14 @@ export function Timeline({
           style={{ marginLeft: `${depth * 24}px` }}
         >
           <span className={styles.nodeIcon}>
-            {node.view === 'welcome' && '👋'}
-            {node.view === 'explore' && '🔍'}
-            {node.view === 'song' && '🎵'}
+            {node.view === "welcome" && "👋"}
+            {node.view === "explore" && "🔍"}
+            {node.view === "song" && "🎵"}
           </span>
           <span className={styles.nodeText}>
-            {node.view === 'welcome' && 'Welcome'}
-            {node.view === 'explore' && (node.prompt || 'Exploring')}
-            {node.view === 'song' && (node.song.title || 'Playing')}
+            {node.view === "welcome" && "Welcome"}
+            {node.view === "explore" && (node.prompt || "Exploring")}
+            {node.view === "song" && (node.song.title || "Playing")}
           </span>
         </button>
         <div className={styles.children}>
@@ -66,7 +66,6 @@ export function Timeline({
 
   return (
     <div className={classNames(styles.timeline, className)}>
-      <ChatView />
       {rootNode && renderNode(rootNode)}
     </div>
   );

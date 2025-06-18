@@ -1,0 +1,10 @@
+.message {
+  background: #000a;
+  padding: 1em;
+  border-left: solid 2px orange;
+
+  &[data-user="true"] {
+    border-left: none;
+    border-right: solid 2px orange;
+  }
+}
