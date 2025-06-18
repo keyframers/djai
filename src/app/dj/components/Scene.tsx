@@ -1,13 +1,15 @@
 "use client";
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Grid, ScreenSpace } from "@react-three/drei";
+import { Grid, ScreenSpace, Html } from "@react-three/drei";
 
 import styles from "./Scene.module.css";
 import DJ from "./3d/DJ";
 import PixelPass from "./3d/PixelPass";
 import Lights from "./3d/Lights";
 import Controls from "./Controls";
+
+import ChatView from "./ChatView";
 
 export default function Scene({ children }: { children?: React.ReactNode }) {
   return (
@@ -20,7 +22,12 @@ export default function Scene({ children }: { children?: React.ReactNode }) {
           <ScreenSpace
             depth={10} // Distance from camera
           >
-            <DJ position={[-8, -1, 0]} />
+            <group position={[-8, 0, 0]}>
+              <Html sprite transform occlude={false}>
+                <ChatView />
+              </Html>
+              <DJ position={[0, -2, 0]} />
+            </group>
           </ScreenSpace>
           <Grid /** Cell size, default: 0.5 */
             position={[0, -5, 0]}

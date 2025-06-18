@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { useActionState, useRef, useEffect } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useActionState, useRef, useEffect } from "react";
+import { useFormStatus } from "react-dom";
 import {
   sendChatMessage,
   type Song,
   type ChatResponse,
   type ChatState,
   type ChatMessage,
-} from '../actions';
-import { appStore } from '@/app/store';
+} from "../actions";
+import { appStore } from "@/app/store";
+import Button from "@/components/Button";
 
 const initialState: ChatState = {
   messages: [],
@@ -19,11 +20,39 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" disabled={pending}>
-      {pending ? '...' : 'Send'}
-    </button>
+    <Button type="submit" disabled={pending}>
+      {pending ? "..." : "Send"}
+    </Button>
   );
 }
+
+const MessageBubble = ({ message }: { message: ChatMessage }) => (
+  <div className="flex mb-4" data-role={message.role === "user"}>
+    <div
+      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+        message.role === "user"
+          ? "bg-blue-500 text-white"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      <p className="whitespace-pre-wrap">{message.content as string}</p>
+
+      {/* {message.role === 'assistant' &&
+          message.response &&
+          message.response.action.actionType === 'RECOMMEND_SONGS' && (
+            <div className="mt-4 space-y-3">
+              {message.response.action.songs.map((song, index) => (
+                <SongCard key={index} song={song} />
+              ))}
+            </div>
+          )} */}
+
+      <div className="text-xs opacity-70 mt-1">
+        {new Date(message.timestamp).toLocaleTimeString()}
+      </div>
+    </div>
+  </div>
+);
 
 export default function ChatView() {
   const [state, formAction] = useActionState(sendChatMessage, initialState);
@@ -34,12 +63,12 @@ export default function ChatView() {
   const lastMessage = state.messages.at(-1);
 
   useEffect(() => {
-    if (lastMessage?.role === 'assistant') {
+    if (lastMessage?.role === "assistant") {
       switch (lastMessage.response?.action.actionType) {
-        case 'RECOMMEND_SONGS':
+        case "RECOMMEND_SONGS":
           appStore.trigger.addNode({
             node: {
-              view: 'explore',
+              view: "explore",
               prompt: lastMessage.response.action.prompt,
               songs: lastMessage.response.action.songs.map((song) => ({
                 ...song,
@@ -50,69 +79,6 @@ export default function ChatView() {
       }
     }
   }, [lastMessage]);
-
-  const SongCard = ({ song }: { song: Song }) => (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-3 hover:bg-gray-750 transition-colors">
-      <div className="flex items-center gap-3 mb-2">
-        <h4 className="font-semibold text-white">{song.title}</h4>
-        <p className="text-gray-300">{song.artist}</p>
-      </div>
-
-      {(song.album || song.year || song.genre) && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {song.album && (
-            <span className="px-2 py-1 bg-blue-900 text-blue-200 text-xs rounded-full">
-              {song.album}
-            </span>
-          )}
-          {song.year && (
-            <span className="px-2 py-1 bg-green-900 text-green-200 text-xs rounded-full">
-              {song.year}
-            </span>
-          )}
-          {song.genre && (
-            <span className="px-2 py-1 bg-yellow-900 text-yellow-200 text-xs rounded-full">
-              {song.genre}
-            </span>
-          )}
-        </div>
-      )}
-
-      <p className="text-sm text-gray-300 italic">{song.explanation}</p>
-    </div>
-  );
-
-  const MessageBubble = ({ message }: { message: ChatMessage }) => (
-    <div
-      className={`flex ${
-        message.role === 'user' ? 'justify-end' : 'justify-start'
-      } mb-4`}
-    >
-      <div
-        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          message.role === 'user'
-            ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-900'
-        }`}
-      >
-        <p className="whitespace-pre-wrap">{message.content as string}</p>
-
-        {/* {message.role === 'assistant' &&
-          message.response &&
-          message.response.action.actionType === 'RECOMMEND_SONGS' && (
-            <div className="mt-4 space-y-3">
-              {message.response.action.songs.map((song, index) => (
-                <SongCard key={index} song={song} />
-              ))}
-            </div>
-          )} */}
-
-        <div className="text-xs opacity-70 mt-1">
-          {new Date(message.timestamp).toLocaleTimeString()}
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto ">
