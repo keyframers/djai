@@ -1,68 +1,37 @@
 'use client';
 
-import { useState } from 'react';
-import { sendChatMessage, type Song, type ChatResponse } from '../actions';
+import { useActionState, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
+import {
+  sendChatMessage,
+  type Song,
+  type ChatResponse,
+  type ChatState,
+  type Message,
+} from '../actions';
 
-interface Message {
-  id: string;
-  type: 'user' | 'assistant';
-  content: string;
-  response?: ChatResponse;
-  timestamp: Date;
+const initialState: ChatState = {
+  messages: [],
+};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+    >
+      {pending ? '...' : 'Send'}
+    </button>
+  );
 }
 
 export default function ChatView() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      content: inputValue.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue('');
-    setIsLoading(true);
-
-    try {
-      const response = await sendChatMessage(inputValue.trim());
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: response.action.message,
-        response: response,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content:
-          'Sorry, I had trouble processing your request. Please try again.',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+  const [state, formAction] = useActionState(sendChatMessage, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const { pending } = useFormStatus();
 
   const SongCard = ({ song }: { song: Song }) => (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-3 hover:bg-gray-750 transition-colors">
@@ -149,7 +118,7 @@ export default function ChatView() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
+        {state.messages.length === 0 ? (
           <div className="text-center text-gray-500 mt-8">
             <div className="text-6xl mb-4">🎵</div>
             <h2 className="text-xl font-semibold mb-2">Welcome to DJ Chat!</h2>
@@ -162,12 +131,12 @@ export default function ChatView() {
             </div>
           </div>
         ) : (
-          messages.map((message) => (
+          state.messages.map((message: Message) => (
             <MessageBubble key={message.id} message={message} />
           ))
         )}
 
-        {isLoading && (
+        {pending && (
           <div className="flex justify-start mb-4">
             <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
               <div className="flex items-center gap-2">
@@ -179,26 +148,27 @@ export default function ChatView() {
         )}
       </div>
 
-      {/* Input */}
-      <div className="border-t  p-4">
-        <div className="flex gap-2">
+      {/* Input Form */}
+      <div className="border-t p-4">
+        <form
+          ref={formRef}
+          action={formAction}
+          className="flex gap-2"
+          onSubmit={() => {
+            // Reset form after submission
+            setTimeout(() => formRef.current?.reset(), 0);
+          }}
+        >
           <input
             type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyPress}
+            name="prompt"
             placeholder="Ask for music recommendations or music questions..."
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            disabled={isLoading}
+            disabled={pending}
+            required
           />
-          <button
-            onClick={sendMessage}
-            disabled={!inputValue.trim() || isLoading}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {isLoading ? '...' : 'Send'}
-          </button>
-        </div>
+          <SubmitButton />
+        </form>
       </div>
     </div>
   );

@@ -39,8 +39,36 @@ const chatResponseSchema = z.object({
 export type Song = z.infer<typeof songRecommendationSchema>;
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 
-export async function sendChatMessage(prompt: string): Promise<ChatResponse> {
+export interface ChatState {
+  messages: Message[];
+}
+
+export interface Message {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
+  response?: ChatResponse;
+  timestamp: Date;
+}
+
+export async function sendChatMessage(
+  prevState: ChatState,
+  formData: FormData
+): Promise<ChatState> {
   'use server';
+
+  const prompt = formData.get('prompt') as string;
+
+  if (!prompt?.trim()) {
+    return prevState;
+  }
+
+  const userMessage: Message = {
+    id: Date.now().toString(),
+    type: 'user',
+    content: prompt.trim(),
+    timestamp: new Date(),
+  };
 
   try {
     const result = await generateObject({
@@ -84,9 +112,30 @@ Remember:
       schema: chatResponseSchema,
     });
 
-    return result.object;
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      type: 'assistant',
+      content: result.object.action.message,
+      response: result.object,
+      timestamp: new Date(),
+    };
+
+    return {
+      messages: [...prevState.messages, userMessage, assistantMessage],
+    };
   } catch (error) {
     console.error('Error in sendChatMessage:', error);
-    throw new Error('Failed to process chat message');
+
+    const errorMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      type: 'assistant',
+      content:
+        'Sorry, I had trouble processing your request. Please try again.',
+      timestamp: new Date(),
+    };
+
+    return {
+      messages: [...prevState.messages, userMessage, errorMessage],
+    };
   }
 }
