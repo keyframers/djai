@@ -1,6 +1,7 @@
 import { createStore } from '@xstate/store';
-import { TimelineGraph, TimelineNode } from './types';
+import { Song, TimelineGraph, TimelineNode } from './types';
 import { produce } from 'immer';
+import { ChatMessage } from './dj/actions';
 
 const createUniqueId = () => {
   return crypto.randomUUID().slice(0, 8);
@@ -43,7 +44,7 @@ type AddNodeEvent = {
   node:
     | { view: 'welcome' }
     | { view: 'explore'; prompt: string }
-    | { view: 'song'; songId: string };
+    | { view: 'song'; song: Song };
 };
 
 export const appStore = createStore({
@@ -51,6 +52,7 @@ export const appStore = createStore({
     graph: initialGraph,
     currentNodeId: initialGraph.initialNodeId,
     mode: 'single' as 'single' | 'timeline',
+    messages: [] as ChatMessage[],
   },
   on: {
     addNode: (context, event: AddNodeEvent) =>
@@ -75,6 +77,10 @@ export const appStore = createStore({
       ...context,
       mode:
         context.mode === 'single' ? ('timeline' as const) : ('single' as const),
+    }),
+    setMessages: (context, event: { messages: ChatMessage[] }) => ({
+      ...context,
+      messages: event.messages,
     }),
   },
 });

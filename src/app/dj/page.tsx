@@ -1,16 +1,17 @@
-"use client";
-import { useSelector } from "@xstate/store/react";
-import { appStore } from "@/app/store";
-import { shallowEqual } from "@xstate/store";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Timeline } from "./components/Timeline";
-import { WelcomeView } from "./components/WelcomeView";
-import { ExploreView } from "./components/ExploreView";
-import { SongView } from "./components/SongView";
-import Scene from "./components/Scene";
+'use client';
+import { useSelector } from '@xstate/store/react';
+import { appStore } from '@/app/store';
+import { shallowEqual } from '@xstate/store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Timeline } from './components/Timeline';
+import { WelcomeView } from './components/WelcomeView';
+import { ExploreView } from './components/ExploreView';
+import { SongView } from './components/SongView';
+import Scene from './components/Scene';
 
-import styles from "./DJ.module.css";
-import Button from "@/components/Button";
+import styles from './DJ.module.css';
+import Button from '@/components/Button';
+import { Song } from '../types';
 
 const queryClient = new QueryClient();
 
@@ -29,18 +30,18 @@ export default function DJPage() {
   const handleWelcomeSubmit = (prompt: string) => {
     appStore.trigger.addNode({
       node: {
-        view: "explore",
+        view: 'explore',
         prompt,
       },
       prevNodeId: state.context.currentNodeId,
     });
   };
 
-  const handleSongSelect = (songId: string) => {
+  const handleSongSelect = (song: Song) => {
     appStore.trigger.addNode({
       node: {
-        view: "song",
-        songId,
+        view: 'song',
+        song,
       },
       prevNodeId: state.context.currentNodeId,
     });
@@ -49,8 +50,8 @@ export default function DJPage() {
   const handleExploreMore = () => {
     appStore.trigger.addNode({
       node: {
-        view: "explore",
-        prompt: "Similar songs",
+        view: 'explore',
+        prompt: 'chillwave',
       },
       prevNodeId: state.context.currentNodeId,
     });
@@ -64,11 +65,11 @@ export default function DJPage() {
           className={styles.modeToggle}
           onClick={() => appStore.trigger.toggleMode()}
         >
-          {state.context.mode === "single" ? "Show Timeline" : "Hide Timeline"}
+          {state.context.mode === 'single' ? 'Show Timeline' : 'Hide Timeline'}
         </Button>
 
         <div className={styles.content}>
-          {state.context.mode === "timeline" && (
+          {state.context.mode === 'timeline' && (
             <Timeline
               className={styles.timeline}
               nodes={state.context.graph.nodes}
@@ -81,25 +82,23 @@ export default function DJPage() {
           )}
 
           <div className={styles.view}>
-            {currentNode?.view === "welcome" && (
+            {currentNode?.view === 'welcome' && (
               <WelcomeView onSubmit={handleWelcomeSubmit} />
             )}
-            {currentNode?.view === "explore" && (
+            {currentNode?.view === 'explore' && (
               <ExploreView
                 prompt={currentNode.prompt}
                 onSelectSong={handleSongSelect}
               />
             )}
-            {currentNode?.view === "song" && (
+            {currentNode?.view === 'song' && (
               <SongView
-                songId={currentNode.songId}
+                song={currentNode.song}
                 onExploreMore={handleExploreMore}
               />
             )}
           </div>
         </div>
-
-        <style jsx>{``}</style>
       </div>
     </QueryClientProvider>
   );

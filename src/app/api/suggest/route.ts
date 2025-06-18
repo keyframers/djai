@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { prompt } = await req.json();
 
   const result = await generateObject({
-    model: openai('o3-mini'),
+    model: openai('o4-mini'),
     system: `
  You are a DJ assistant.
  You are given a prompt and you need to suggest a song that matches the prompt.

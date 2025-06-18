@@ -20,12 +20,11 @@ const songRecommendationSchema = z.object({
 const possibleActionsSchema = z.discriminatedUnion('action', [
   z.object({
     action: z.literal('RECOMMEND_SONGS'),
-    message: z.string().describe('The conversational response to the user'),
-    songs: z
-      .array(songRecommendationSchema)
-      .min(3)
-      .max(5)
-      .describe('3-5 song recommendations'),
+    message: z
+      .string()
+      .describe(
+        'The conversational response to the user, like "Sure I will find you songs like..."'
+      ),
   }),
   z.object({
     action: z.literal('RESPOND_TO_QUERY'),
