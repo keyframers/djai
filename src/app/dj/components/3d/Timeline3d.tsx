@@ -2,7 +2,7 @@ import { appStore } from "@/app/store";
 
 import { useSelector } from "@xstate/store/react";
 import { Bounds, Html, useBounds } from "@react-three/drei";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { Group } from "three";
 import type { TimelineNode } from "@/app/types";
 
@@ -10,23 +10,32 @@ import { ExploreView } from "../ExploreView";
 import { SongView } from "../SongView";
 
 import { Song } from "@/app/types";
+import { calculateForceLayout } from "../forceLayout";
 
 export default function Timeline3d() {
   const state = useSelector(appStore, (state) => state);
 
-  const { nodes } = state.context.graph;
-  // nodes={state.context.graph.nodes}
-  // edges={state.context.graph.edges}
-  // currentNodeId={state.context.currentNodeId}
-  // onNodeSelect={(nodeId) =>
-  //   appStore.trigger.setCurrentNodeId({ nodeId })
-  // }
+  const nodePositions = useMemo(() => {
+    return calculateForceLayout(state.context.graph, {
+      width: 300,
+      height: 300,
+      linkDistance: 10,
+      chargeStrength: -100,
+    });
+  }, [state.context.graph]);
 
   return (
     <Bounds fit margin={10}>
-      <group position={[0, -8, 0]}>
-        {nodes.map((node, index) => {
-          return <TimelineNodeObject node={node} index={index} key={node.id} />;
+      <group>
+        {nodePositions.map((nodePosition) => {
+          const { x, y, node } = nodePosition;
+          return (
+            <TimelineNodeObject
+              node={node}
+              position={[x, 0, y]}
+              key={node.id}
+            />
+          );
         })}
       </group>
     </Bounds>
@@ -35,11 +44,12 @@ export default function Timeline3d() {
 
 function TimelineNodeObject({
   node,
-  index,
+  position,
 }: {
+  position: [number, number, number];
   node: TimelineNode;
-  index: number;
 }) {
+  console.log("TimelineNodeObject", { node, position });
   const groupRef = useRef<Group>(null);
   const state = useSelector(appStore, (state) => state);
   const { currentNodeId } = state.context;
@@ -77,37 +87,41 @@ function TimelineNodeObject({
     <group
       key={node.id}
       ref={groupRef}
-      position={[0, 0, index * 10]}
+      position={position}
       onClick={() => appStore.trigger.setCurrentNodeId({ nodeId: node.id })}
     >
-      <mesh>
+      {/* <mesh>
+        <boxGeometry args={[1, 10, 1]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh> */}
+      <mesh position={[0, -8, 0]}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial
-          color={
-            node.view === "welcome"
-              ? "blue"
-              : node.view === "explore"
-              ? "green"
-              : "red"
-          }
+          color={"orange"}
+          transparent
+          opacity={isCurrent ? 1 : 0.5}
         />
       </mesh>
 
       <Html
+        position={[0, -5, 0]}
         sprite={isCurrent}
         transform
         onClick={() => appStore.trigger.setCurrentNodeId({ nodeId: node.id })}
+        style={{ opacity: isCurrent ? 1 : 0.5 }}
       >
-        {node?.view === "explore" && (
-          <ExploreView
-            prompt={node.prompt}
-            songs={node.songs}
-            onSelectSong={handleSongSelect}
-          />
-        )}
-        {node?.view === "song" && (
-          <SongView song={node.song} onExploreMore={handleExploreMore} />
-        )}
+        <div style={{ pointerEvents: isCurrent ? "auto" : "none" }}>
+          {node?.view === "explore" && (
+            <ExploreView
+              prompt={node.prompt}
+              songs={node.songs}
+              onSelectSong={handleSongSelect}
+            />
+          )}
+          {node?.view === "song" && (
+            <SongView song={node.song} onExploreMore={handleExploreMore} />
+          )}
+        </div>
       </Html>
     </group>
   );

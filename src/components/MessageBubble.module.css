@@ -7,4 +7,16 @@
     border-left: none;
     border-right: solid 2px orange;
   }
+
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+
+  @starting-style {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  transform-origin: center left;
+  &[data-user="true"] {
+    transform-origin: center right;
+  }
 }
