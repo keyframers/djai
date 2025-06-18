@@ -1,4 +1,4 @@
-import { TimelineNode, TimelineEdge } from '../types';
+import { TimelineNode, TimelineEdge } from "@/app/types";
 
 interface TimelineProps {
   nodes: TimelineNode[];
@@ -29,19 +29,19 @@ export function Timeline({
     return (
       <div key={node.id} className="node-container">
         <button
-          className={`timeline-node ${isActive ? 'active' : ''}`}
+          className={`timeline-node ${isActive ? "active" : ""}`}
           onClick={() => onNodeSelect(node.id)}
           style={{ marginLeft: `${depth * 24}px` }}
         >
           <span className="node-icon">
-            {node.view === 'welcome' && '👋'}
-            {node.view === 'explore' && '🔍'}
-            {node.view === 'song' && '🎵'}
+            {node.view === "welcome" && "👋"}
+            {node.view === "explore" && "🔍"}
+            {node.view === "song" && "🎵"}
           </span>
           <span className="node-text">
-            {node.view === 'welcome' && 'Welcome'}
-            {node.view === 'explore' && (node.prompt || 'Exploring')}
-            {node.view === 'song' && (node.songId || 'Playing')}
+            {node.view === "welcome" && "Welcome"}
+            {node.view === "explore" && (node.prompt || "Exploring")}
+            {node.view === "song" && (node.songId || "Playing")}
           </span>
         </button>
         <div className="children">
