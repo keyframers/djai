@@ -2,8 +2,8 @@
 
 import { z } from 'zod';
 import { openai } from '@ai-sdk/openai';
-import { generateObject } from 'ai';
-import { CoreMessage } from 'ai';
+import { CoreAssistantMessage, generateObject } from 'ai';
+import { CoreMessage, CoreUserMessage } from 'ai';
 
 // Song recommendation schema matching the existing Song type
 const songRecommendationSchema = z.object({
@@ -28,7 +28,9 @@ const possibleActionsSchema = z.discriminatedUnion('actionType', [
   }),
   z.object({
     actionType: z.literal('RESPOND_TO_QUERY'),
-    message: z.string().describe('The conversational response to the user'),
+    message: z
+      .string()
+      .describe('The brief conversational response to the user'),
   }),
 ]);
 
@@ -36,13 +38,19 @@ const chatResponseSchema = z.object({
   action: possibleActionsSchema,
 });
 
+export type ChatMessage = (
+  | CoreUserMessage
+  | (CoreAssistantMessage & { response: ChatResponse | null })
+) & {
+  timestamp: number;
+};
+
 // Export types for use in components
 export type Song = z.infer<typeof songRecommendationSchema>;
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 
 export interface ChatState {
-  messages: CoreMessage[];
-  response?: ChatResponse;
+  messages: ChatMessage[];
 }
 
 export async function sendChatMessage(
@@ -57,9 +65,10 @@ export async function sendChatMessage(
     return prevState;
   }
 
-  const userMessage: CoreMessage = {
+  const userMessage: ChatMessage = {
     role: 'user',
     content: prompt.trim(),
+    timestamp: Date.now(),
   };
 
   const messages = [...prevState.messages, userMessage];
@@ -106,22 +115,25 @@ Remember:
       schema: chatResponseSchema,
     });
 
-    const assistantMessage: CoreMessage = {
+    const assistantMessage: ChatMessage = {
       role: 'assistant',
       content: result.object.action.message,
+      response: result.object,
+      timestamp: Date.now(),
     };
 
     return {
       messages: [...messages, assistantMessage],
-      response: result.object,
     };
   } catch (error) {
     console.error('Error in sendChatMessage:', error);
 
-    const errorMessage: CoreMessage = {
+    const errorMessage: ChatMessage = {
       role: 'assistant',
       content:
         'Sorry, I had trouble processing your request. Please try again.',
+      timestamp: Date.now(),
+      response: null,
     };
 
     return {
