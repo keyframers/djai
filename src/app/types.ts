@@ -8,7 +8,7 @@ interface WelcomeNode extends BaseNode {
 
 interface ExploreNode extends BaseNode {
   view: 'explore';
-  prompt: string;
+  songs: Song[];
 }
 
 interface SongNode extends BaseNode {
@@ -19,13 +19,12 @@ interface SongNode extends BaseNode {
 export type TimelineNode = WelcomeNode | ExploreNode | SongNode;
 
 export interface Song {
-  id: string;
   title: string;
   artist: string;
   lyrics?: string;
-  album?: string;
-  year?: number;
-  genre?: string;
+  album: string | null;
+  // year?: number;
+  // genre?: string;
   tags: string[];
 }
 
